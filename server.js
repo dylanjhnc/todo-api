@@ -13,7 +13,16 @@ app.get('/', function (req, res) {
 });
 
 app.get('/todos', function (req, res) {
-	res.json(todos);
+	var queryParams = req.query;
+	var filteredTodos = todos;
+
+	if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+		filteredTodos = _.where(todos, {completed: true});
+	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+		filteredTodos = _.where(todos, {completed: false});
+	}
+
+	res.json(filteredTodos);
 });
 
 app.get('/todos/:id', function (req, res) {
@@ -82,20 +91,6 @@ app.put('/todos/:id', function (req, res) {
 	_.extend(matchingTodo, validAttributes);
 
 	res.json(matchingTodo);
-
-	// todos = _.without(todos, matchingTodo);
-
-	// if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-	// 	res.status(400).send();
-	// 	return;
-	// }
-
-	// matchingTodo.description = body.description.trim();
-	// matchingTodo.completed = body.completed;
-
-	// todos.push(matchingTodo);
-
-	// res.json(matchingTodo);
 });
 
 app.listen(PORT, function () {
