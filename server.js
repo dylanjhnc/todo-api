@@ -38,15 +38,17 @@ app.get('/todos', function(req, res) {
 
 app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id);
-	var matchingTodo = _.findWhere(todos, {
-		id: todoId
+	db.todo.findById(todoId).then(function(todo) {
+		if (!!todo) {
+			res.status(404).json({
+				error: 'no todo found'
+			});
+		} else {
+			res.json(todo.toJSON());
+		}
+	}, function () {
+		res.status(500).send('something went wrong');
 	});
-
-	if (!matchingTodo) {
-		res.status(404).send();
-	} else {
-		res.json(matchingTodo);
-	}
 });
 
 app.post('/todos', function(req, res) {
@@ -85,7 +87,7 @@ app.put('/todos/:id', function(req, res) {
 
 	if (!matchingTodo) {
 		return res.status(404).json({
-			"error": "no todo found"
+			'error': 'no todo found'
 		});
 	}
 
@@ -93,7 +95,7 @@ app.put('/todos/:id', function(req, res) {
 		validAttributes.completed = body.completed;
 	} else if (body.hasOwnProperty('completed')) {
 		return res.status(400).json({
-			"error": "completed should be a boolean"
+			'error': 'completed should be a boolean'
 		});
 	}
 
@@ -101,7 +103,7 @@ app.put('/todos/:id', function(req, res) {
 		validAttributes.description = body.description;
 	} else if (body.hasOwnProperty('description')) {
 		return res.status(400).json({
-			"error": "description is invalid"
+			'error': 'description is invalid'
 		});
 	}
 
