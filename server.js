@@ -43,7 +43,7 @@ app.get('/todos', function(req, res) {
 app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id);
 	db.todo.findById(todoId).then(function(todo) {
-		if (!!todo) {
+		if (!todo) {
 			res.status(404).json({
 				error: 'no todo found'
 			});
